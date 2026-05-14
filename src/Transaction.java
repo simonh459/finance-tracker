@@ -11,9 +11,27 @@ public class Transaction {
     private String category;
     private LocalDate date;
 
+    // constructor used for creating new objects (no ID)
     public Transaction(String title, double amount, String category, LocalDate date){
 
         this.transactionID = nextID++;
+        this.title = title;
+        this.amount = amount;
+        this.category = category;
+        this.date = date;
+    }
+
+
+    // constructor used for loading and saving existing objects
+    public Transaction(int id, String title, double amount, String category, LocalDate date){
+
+        this.transactionID = id;
+
+        // Updates the nextID so next transaction doesn't have the same ID
+        if(id >= nextID){
+            nextID = id + 1;
+        }
+
         this.title = title;
         this.amount = amount;
         this.category = category;
@@ -34,7 +52,7 @@ public class Transaction {
 
 
     public String toFileString(){
-        return title + "," + amount + "," + category + "," + date;
+        return transactionID + "," + title + "," + amount + "," + category + "," + date;
     }
 
 

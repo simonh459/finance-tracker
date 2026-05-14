@@ -1,1 +1,5 @@
-Income,1,wage,178.5,work,2026-02-28,job
+Expense,5,payment,200.0,other,2002-02-20,false
+Expense,2,electricity,40.0,bills,2026-02-20,true
+Income,1,wage,178.5,job,2026-02-28,work
+Expense,3,electricity,40.0,bills,2026-03-20,true
+Expense,4,electricity,40.0,bills,2026-04-20,true
