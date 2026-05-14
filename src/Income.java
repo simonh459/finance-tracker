@@ -22,7 +22,7 @@ public class Income extends Transaction {
     }
 
     // setter
-    public void setSource(boolean recurring){
+    public void setSource(String source){
         this.source = source;
     }
 

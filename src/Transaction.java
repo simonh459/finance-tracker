@@ -39,24 +39,24 @@ public class Transaction {
 
 
     // setters
-    public void setTitle(){
+    public void setTitle(String title){
         this.title = title;
     }
 
-    public void setAmount(){
+    public void setAmount(double amount){
         this.amount = amount;
     }
 
-    public void setCategory(){
+    public void setCategory(String category){
         this.category = category;
     }
 
-    public void setDate(){
+    public void setDate(LocalDate date){
         this.date = date;
     }
 
     // getters
-    public int getID(){
+    public int getTransactionID(){
         return transactionID;
     }
 
