@@ -1,7 +1,9 @@
 import java.io.*;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
@@ -260,6 +262,73 @@ public class FinanceManager {
         System.out.println();
 
     } // end method
+
+
+    public void balanceForecast(){
+
+        double currentBalance = 0;
+        double totalIncome = 0;
+
+        LocalDate earliest = LocalDate.now();
+        LocalDate latest = LocalDate.now();
+
+        // Calculating the current balance
+        for(Transaction t : transactions){
+            //gets the date of the oldest transaction
+            if(t.getDate().isBefore(earliest)){
+                earliest = t.getDate();
+            }
+            // gets the date of the newest transaction
+            if(t.getDate().isAfter(latest)){
+                latest = t.getDate();
+            }
+
+            if(t instanceof Income){
+                totalIncome += t.getAmount();
+                currentBalance += t.getAmount();
+            }
+
+            else if(t instanceof Expense){
+                currentBalance += t.getAmount();
+            }
+        }
+
+        // Get recurring expenses that repeat monthly
+        double monthlyRecurring = 0;
+        for(Transaction t : transactions) {
+            if (t instanceof Expense) {
+                Expense e = (Expense) t;
+                if (e.getRecurring()) {
+                    monthlyRecurring += e.getAmount();
+                }
+            }
+        }
+
+        System.out.println();
+        System.out.println("WARNING: THE BALANCE FORECAST GETS MORE ACCURATE THE LONGER YOU USE IT..");
+        System.out.println("IT CALCULATES AVERAGE INCOME TO DETERMINE FUTURE INCOMES...");
+        System.out.println("========================");
+
+        // gets all months between the earliest and latest dates
+        long monthsSpan = ChronoUnit.MONTHS.between(earliest, latest);
+
+        // ensures month span cannot be 0 - Division of 0 error
+        if(monthsSpan < 1){
+            monthsSpan = 1;
+        }
+
+        double monthlyIncome = totalIncome / monthsSpan;
+        double netMonthlyBalance = monthlyIncome - monthlyRecurring;
+
+
+        int[] amountOfMonths = {3, 6, 9};
+
+        for(int month : amountOfMonths){
+            double predictedNetBalance = currentBalance + (netMonthlyBalance * month);
+            System.out.printf("%d Month Forecast:   £%.2f%n", month, predictedNetBalance);
+        }
+        System.out.println(); // spacing
+    }
 
 
     public void transactionHistory(){

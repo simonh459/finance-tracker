@@ -46,7 +46,7 @@ public class Main {
                         finance.transactionHistory();
                     }
                     else if(choice == 5){
-
+                        finance.balanceForecast();
                     }
                     else if(choice == 6){
                         finance.turnRecurringOff(scanner);
