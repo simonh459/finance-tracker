@@ -20,14 +20,16 @@ public class Main {
             System.out.println("2. Add Expenses");
             System.out.println("3. Calculate balance");
             System.out.println("4. View Transactions");
-            System.out.println("5. Save to file");
-            System.out.println("6. Exit Program");
+            System.out.println("5. Balance forecast");
+            System.out.println("6. Turn off recurring expense");
+            System.out.println("7. Save to file");
+            System.out.println("8. Exit Program");
 
             try{
                 System.out.print("Enter a number to run an option: ");
                 choice = scanner.nextInt();
 
-                if(choice >= 1 && choice <= 6){
+                if(choice >= 1 && choice <= 8){
 
                     if(choice == 1){
                         finance.createIncome(scanner);
@@ -44,9 +46,15 @@ public class Main {
                         finance.transactionHistory();
                     }
                     else if(choice == 5){
-                        finance.saveTransactionDetails();
+
                     }
                     else if(choice == 6){
+                        finance.turnRecurringOff(scanner);
+                    }
+                    else if(choice == 7){
+                        finance.saveTransactionDetails();
+                    }
+                    else if(choice == 8){
                         System.out.println("Exiting program...");
                         online = false;
                     }

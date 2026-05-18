@@ -134,6 +134,7 @@ public class FinanceManager {
         System.out.println(); // spacing
     }
 
+
     public void calculateBalance(){
         System.out.println(); // spacing
 
@@ -164,13 +165,14 @@ public class FinanceManager {
         ArrayList<Transaction> newTransactions = new ArrayList<>();
 
         for(Transaction t : transactions){
-            if(t instanceof Expense){
+            if(t instanceof Expense){         // compiler doesn't see t as an Expense, not allowing it to call Expense methods
                 Expense expense = (Expense) t;
 
                 if(expense.getRecurring()){
 
                     LocalDate newDate = expense.getDate().plusMonths(1);
 
+                    // if date is before the current date, a new Expense is created
                     while(newDate.isBefore(LocalDate.now()) || newDate.equals(LocalDate.now())){
                         Expense nextMonthExpense = new Expense(expense.getTitle(),
                                 expense.getAmount(),
@@ -193,6 +195,7 @@ public class FinanceManager {
 
 
     // prevents duplicate recurring expenses being added to the ArrayList
+    // returns true if 2 Expenses have the same title and date
     private boolean recurringExpenseExists(String title, LocalDate date){
 
         for(Transaction t : transactions){
@@ -206,6 +209,57 @@ public class FinanceManager {
         }
         return false;
     }
+
+
+    public void turnRecurringOff(Scanner scanner){
+
+        boolean recurringFound = false;
+        for(Transaction t : transactions){
+            if(t instanceof Expense){
+                Expense e = (Expense) t;
+                if(e.getRecurring()){
+                    System.out.println("ID: " + e.getTransactionID() + "\tTitle: " + e.getTitle());
+                    recurringFound = true;
+                 }
+            }
+        }
+
+        if(!recurringFound){
+            System.out.println("There are no recurring expenses in your transactions.");
+            return;
+        }
+        scanner.nextLine();
+        int choice = (int) checkValidNumber(scanner, "Enter the ID of the transaction you would like to turn off recurring bill: ", 0, Integer.MAX_VALUE);
+        for(Transaction t : transactions){
+            if(t instanceof Expense && t.getTransactionID() == choice){
+                Expense e = (Expense) t;
+
+                if(e.getRecurring()){
+                    e.setRecurring(false);
+                    System.out.println("Recurring turned OFF for " + e.getTitle());
+                    System.out.println();
+
+                    // turns off recurring bill for expenses with the same title (copies of the original)
+                    for(Transaction t2 : transactions){
+                        if(t2 instanceof Expense){
+                            Expense copy = (Expense) t2;
+                            if(copy.getTitle().equalsIgnoreCase(e.getTitle()) && copy.getRecurring()){
+                                copy.setRecurring(false);
+                            }
+                        }
+                    } // end for
+                }
+                else{
+                    System.out.println("ID: " + choice + " already has recurring OFF.");
+                    System.out.println();
+                }
+                return;
+            } // end ID check
+        } // end for
+        System.out.println("ID " + choice + " does not exist in your transactions...");
+        System.out.println();
+
+    } // end method
 
 
     public void transactionHistory(){
