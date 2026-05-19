@@ -1,16 +1,17 @@
 import java.io.*;
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class FinanceManager {
 
     private ArrayList<Transaction> transactions = new ArrayList<>();
+    private HashMap<String, Double> budget = new HashMap<>();
 
 
     // method used to validate the data entered by user FOR STRINGS
@@ -262,6 +263,67 @@ public class FinanceManager {
         System.out.println();
 
     } // end method
+
+
+    public void setBudget(Scanner scanner){
+
+        System.out.println();
+        System.out.println("<<< SET BUDGET >>>");
+
+        // gets all existing categories
+        ArrayList<String> seen = new ArrayList<>();
+        System.out.println("Existing expense categories");
+        for(Transaction t : transactions){
+            if(t instanceof Expense){
+                String category = t.getCategory();
+                if(!seen.contains(category)){
+                    seen.add(category);
+                    System.out.println(" -" + category);
+                }
+            }
+        }
+
+        scanner.nextLine();
+        String category = checkValidString(scanner, "Enter the category you want to budget: ");
+        double limit = checkValidNumber(scanner, "Enter the limit of the budget: ", 0.01, 99999);
+
+        budget.put(category.toLowerCase(), limit);
+        System.out.printf("A budget of £%.2f has been added to the %s category",limit, category);
+        System.out.println();
+    }
+
+
+    public void viewBudget(){
+
+        if(budget.isEmpty()){
+            System.out.println("No budgets have been set!");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("<<< Budgets >>>");
+
+        for(String category : budget.keySet()){
+            double limit = budget.get(category);
+            double spent = 0;
+
+            for(Transaction t : transactions){
+                if(t instanceof Expense && t.getCategory().equalsIgnoreCase(category)){
+                    spent += t.getAmount();
+                }
+            }
+
+            double remaining = limit - spent;
+            System.out.printf("%s category: £%.2f || £%.2f spent\n",category, remaining, spent);
+
+            if(spent > remaining){
+                System.out.println("WARNING: YOU HAVE OVERSPENT YOUR BUDGET");
+            }
+            else if(spent > (0.75 * remaining)){
+                System.out.println("WARNING: YOU HAVE SPENT 3/4 OF YOUR BUDGET");
+            }
+        }
+    }
 
 
     public void balanceForecast(){
