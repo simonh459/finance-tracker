@@ -10,7 +10,8 @@ public class Main {
 
         System.out.println("Finance Manager Application Loading...");
         finance.loadTransactionDetails();
-        finance.saveTransactionDetails(); // saves recurring expenses that are added
+        finance.saveTransactionDetails(); // saves recurring expenses that are added to the txt file.
+        finance.loadBudgetDetails();
 
         int choice;
         while(online){
@@ -87,5 +88,6 @@ public class Main {
         }
         scanner.close();
         finance.saveTransactionDetails();
+        finance.saveBudgetDetails();
     }
 }

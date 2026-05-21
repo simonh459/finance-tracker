@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class FinanceManager {
 
     private ArrayList<Transaction> transactions = new ArrayList<>();
-    private HashMap<String, Double> budget = new HashMap<>();
+    private HashMap<String, Double> budgets = new HashMap<>();
 
 
     // method used to validate the data entered by user FOR STRINGS
@@ -287,7 +287,7 @@ public class FinanceManager {
         String category = checkValidString(scanner, "Enter the category you want to budget: ");
         double limit = checkValidNumber(scanner, "Enter the limit of the budget: ", 0.01, 99999);
 
-        budget.put(category.toLowerCase(), limit);
+        budgets.put(category.toLowerCase(), limit);
         System.out.printf("A budget of £%.2f has been added to the %s category",limit, category);
         System.out.println();
     }
@@ -295,7 +295,7 @@ public class FinanceManager {
 
     public void viewBudget(){
 
-        if(budget.isEmpty()){
+        if(budgets.isEmpty()){
             System.out.println("No budgets have been set!");
             return;
         }
@@ -303,8 +303,8 @@ public class FinanceManager {
         System.out.println();
         System.out.println("<<< Budgets >>>");
 
-        for(String category : budget.keySet()){
-            double limit = budget.get(category);
+        for(String category : budgets.keySet()){
+            double limit = budgets.get(category);
             double spent = 0;
 
             for(Transaction t : transactions){
@@ -323,6 +323,7 @@ public class FinanceManager {
                 System.out.println("WARNING: YOU HAVE SPENT 3/4 OF YOUR BUDGET");
             }
         }
+        System.out.println(); // menu spacing
     }
 
 
@@ -422,7 +423,47 @@ public class FinanceManager {
             bWriter.close();
         }
         catch(IOException e){
-            System.out.println("An error occurred saving details");
+            System.out.println("An error occurred saving transaction details");
+        }
+    }
+
+
+    public void saveBudgetDetails(){
+        try{
+            FileWriter fWriter = new FileWriter("BudgetDetails.txt");
+            BufferedWriter bWriter = new BufferedWriter(fWriter);
+
+            for(String category : budgets.keySet()){
+                bWriter.write(category + "," + budgets.get(category));
+                bWriter.newLine();
+            }
+
+            bWriter.close();
+            System.out.println("Budget Details saved successfully.");
+        }
+        catch(IOException e){
+            System.out.println("An error occurred saving budget details");
+        }
+    }
+
+
+    public void loadBudgetDetails(){
+        try{
+            File file = new File("BudgetDetails.txt");
+            Scanner scanner = new Scanner(file);
+
+            while(scanner.hasNextLine()){
+                String line = scanner.nextLine();
+                String[] pieces = line.split(",");
+
+                String category = pieces[0];
+                double limit = Double.parseDouble(pieces[1]);
+                budgets.put(category, limit);
+            }
+            scanner.close();
+        }
+        catch(FileNotFoundException e){
+            System.out.println("File not found...");
         }
     }
 
