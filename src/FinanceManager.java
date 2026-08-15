@@ -177,13 +177,16 @@ public class FinanceManager {
 
                     // if date is before the current date, a new Expense is created
                     while(newDate.isBefore(LocalDate.now()) || newDate.equals(LocalDate.now())){
-                        Expense nextMonthExpense = new Expense(expense.getTitle(),
-                                expense.getAmount(),
-                                expense.getCategory(),
-                                newDate,
-                                true);
 
-                        if(!recurringExpenseExists(expense.getTitle(), newDate)){
+                        if(!recurringExpenseExists(expense.getTitle(), newDate)
+                            && !existsInPendingList(newTransactions, expense.getTitle(), newDate)){
+
+                            Expense nextMonthExpense = new Expense(expense.getTitle(),
+                                    expense.getAmount(),
+                                    expense.getCategory(),
+                                    newDate,
+                                    true);
+
                             newTransactions.add(nextMonthExpense);
                         }
 
@@ -194,6 +197,21 @@ public class FinanceManager {
         } // end for
         transactions.addAll(newTransactions);
 
+    }
+
+
+    // checks the batch of expenses generated so far in this call, so two
+// recurring originals can't both create a copy for the same month
+    private boolean existsInPendingList(ArrayList<Transaction> pending, String title, LocalDate date){
+        for(Transaction t : pending){
+            if(t instanceof Expense){
+                Expense e = (Expense) t;
+                if(e.getTitle().equalsIgnoreCase(title) && e.getDate().equals(date)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
@@ -316,11 +334,11 @@ public class FinanceManager {
             double remaining = limit - spent;
             System.out.printf("%s category: £%.2f || £%.2f spent\n",category, remaining, spent);
 
-            if(spent > remaining){
+            if(spent > limit){
                 System.out.println("WARNING: YOU HAVE OVERSPENT YOUR BUDGET");
             }
-            else if(spent > (0.75 * remaining)){
-                System.out.println("WARNING: YOU HAVE SPENT 3/4 OF YOUR BUDGET");
+            else if(spent > (0.75 * limit)){
+                System.out.println("WARNING: YOU HAVE SPENT 75% OF YOUR BUDGET");
             }
         }
         System.out.println(); // menu spacing
@@ -352,7 +370,7 @@ public class FinanceManager {
             }
 
             else if(t instanceof Expense){
-                currentBalance += t.getAmount();
+                currentBalance -= t.getAmount();
             }
         }
 
@@ -479,6 +497,7 @@ public class FinanceManager {
                 Transaction transaction = null;
 
                 String type = pieces[0];
+                int id = Integer.parseInt(pieces[1]);
                 String title = pieces[2];
                 double amount = Double.parseDouble(pieces[3]);
                 String category = pieces[4];
@@ -486,11 +505,11 @@ public class FinanceManager {
 
                 if (type.equalsIgnoreCase("Income")) {
                     String source = pieces[6];
-                    transaction = new Income(title, amount, category, date, source);
+                    transaction = new Income(id, title, amount, category, date, source);
                 }
                 else if (type.equalsIgnoreCase("Expense")) {
                     boolean recurring = Boolean.parseBoolean(pieces[6]);
-                    transaction = new Expense(title, amount, category, date, recurring);
+                    transaction = new Expense(id, title, amount, category, date, recurring);
 
                 }
 

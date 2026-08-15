@@ -10,6 +10,7 @@ public class Main {
 
         System.out.println("Finance Manager Application Loading...");
         finance.loadTransactionDetails();
+        finance.addRecurringExpenses();
         finance.saveTransactionDetails(); // saves recurring expenses that are added to the txt file.
         finance.loadBudgetDetails();
 
